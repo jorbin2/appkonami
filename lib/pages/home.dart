@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:konamiapp/pages/widgets/widget.dart';
+
+import '../model/modelapi.dart';
+import '../services/service.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -28,11 +32,11 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
 
+
+
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-
-        child: Scaffold(
+    return Scaffold(
 
           appBar: AppBar(backgroundColor: Colors.black54),
 
@@ -253,21 +257,29 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
           ),
-          body: Column(
-            children: [
-              Expanded(
-                flex: 2,
-                  child: Container(
+          body:  FutureBuilder(
+    future: SoccerApi().getAllMatchs(), //Here we will call our getData() method,
+    builder: (context, snapshot) {
+    //the future builder is very intersting to use when you work with api
+      print("home start api1");
+print(SoccerApi().getAllMatchs());
+      print(snapshot.data);
+      print('data');
 
-                  )
-              )
-            ],
-          ),
-
-        ));
-
+    if (snapshot.hasData) {
+      print("home start api2");
+    print(snapshot.data);
+    return PageBody(snapshot.data as List<Matches>);
+    } else {
+    return Center(
+    child: CircularProgressIndicator(),
+    );
+    }
+    }, // here we will buil the app layout
+    ),
+    );
   }
-
-
-
 }
+
+
+
