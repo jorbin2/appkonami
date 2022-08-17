@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:konamiapp/pages/widgets/widget.dart';
-
+import 'package:http/http.dart' as http;
 import '../model/modelapi.dart';
+import '../services/match.bloc.dart';
 import '../services/service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -40,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           appBar: AppBar(backgroundColor: Colors.black54),
 
-          drawer: Drawer(
+        drawer: Drawer(
 
             backgroundColor: Colors.grey,
 
@@ -257,26 +261,29 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
           ),
-          body:  FutureBuilder(
-    future: SoccerApi().getAllMatchs(), //Here we will call our getData() method,
-    builder: (context, snapshot) {
-    //the future builder is very intersting to use when you work with api
-      print("home start api1");
-print(SoccerApi().getAllMatchs());
-      print(snapshot.data);
-      print('data');
+        body:  BlocBuilder<MatchBloc,MatchState>(
 
-    if (snapshot.hasData) {
-      print("home start api2");
-    print(snapshot.data);
-    return PageBody(snapshot.data as List<Matches>);
-    } else {
-    return Center(
-    child: CircularProgressIndicator(),
-    );
+          builder: (context, state){
+
+
+      if (state is MatchLodingState) {
+
+        return const Center(
+          child: CircularProgressIndicator(
+            backgroundColor: Colors.cyanAccent,
+          ),
+        );
+     //   return PageBody(snapshot.data as List<Matches>);
+      } else if (state is MatchSuccessState) {
+        return PageBody(state.matchList.data);
+
+    }else{
+        return Container();
+      }
+
+
     }
-    }, // here we will buil the app layout
-    ),
+    )
     );
   }
 }
